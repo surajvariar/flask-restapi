@@ -27,8 +27,8 @@ resouce_fields={
     'vchr_employee_name':fields.String,
     'dat_birth_date' :fields.String,
     'vchr_contact_number' :fields.String,
-    # 'dbl_basic_pay' :fields.Float,
-    # 'dbl_basic_percentage' :fields.Float,
+    'dbl_basic_pay' :fields.Float,
+    'dbl_basic_percentage' :fields.Float,
     'dbl_salary' :fields.Float 
 }
 
