@@ -60,34 +60,34 @@ class ToDoList(Resource):
         table=ToDoModel.query.all()
         todos={}
         for task in table:
-            todos[task.id]={"vchr_employee_code":task.vchr_employee_code,"vchr_employee_name":task.vchr_employee_name,"dat_birth_date":task.dat_birth_date,"vchr_contact_number":task.vchr_contact_number,"dbl_basic_pay":task.dbl_basic_pay,"dbl_basic_percentage":task.dbl_basic_percentage,"dbl_salary":task.dbl_salary}
+            todos[task.pk_bint_employee_master_id]={"vchr_employee_code":task.vchr_employee_code,"vchr_employee_name":task.vchr_employee_name,"dat_birth_date":task.dat_birth_date,"vchr_contact_number":task.vchr_contact_number,"dbl_basic_pay":task.dbl_basic_pay,"dbl_basic_percentage":task.dbl_basic_percentage,"dbl_salary":task.dbl_salary}
         return todos
 
 class ToDo(Resource):
     @marshal_with(resouce_fields)  #To parse the data in a defined order.
-    def get(self,pk_bint_employee_master_id):
-        task=ToDoModel.query.filter_by(id=pk_bint_employee_master_id).first()  #checking if the data is present in db
+    def get(self,employee_id):
+        task=ToDoModel.query.filter_by(pk_bint_employee_master_id=employee_id).first()  #checking if the data is present in db
         if not task:
             abort(403,descrption="Bad Request")
         return task
 
     @marshal_with(resouce_fields)  #Used for parsing.
-    def post(self,pk_bint_employee_master_id):
+    def post(self,employee_id):
         args=task_post_args.parse_args()  #These are the values which are passed in body(POSTMAN)
-        task=ToDoModel.query.filter_by(id=pk_bint_employee_master_id).first()
+        task=ToDoModel.query.filter_by(pk_bint_employee_master_id=employee_id).first()
         if task:
             abort(409,descrption="This task already exits")
         bp = args["dbl_basic_pay"]
         allw = args["dbl_basic_percentage"]
         salary = bp * (1 + (allw/100))
-        todos=ToDoModel(id=pk_bint_employee_master_id,vchr_employee_code=args["vchr_employee_code"],vchr_employee_name=args["vchr_employee_name"],dat_birth_date=args["dat_birth_date"],vchr_contact_number=args["vchr_contact_number"],dbl_basic_pay=args["dbl_basic_pay"],dbl_basic_percentage=args["dbl_basic_percentage"],salary=salary)  
+        todos=ToDoModel(pk_bint_employee_master_id=employee_id,vchr_employee_code=args["vchr_employee_code"],vchr_employee_name=args["vchr_employee_name"],dat_birth_date=args["dat_birth_date"],vchr_contact_number=args["vchr_contact_number"],dbl_basic_pay=args["dbl_basic_pay"],dbl_basic_percentage=args["dbl_basic_percentage"],salary=salary)  
         db.session.add(todos)   #Adding values to table
         db.session.commit()   #Commiting
         return todos   #Displays the recently added values
     @marshal_with(resouce_fields)
-    def put(self,pk_bint_employee_master_id):
+    def put(self,employee_id):
         args=task_put_args.parse_args()
-        table=ToDoModel.query.filter_by(id=pk_bint_employee_master_id).first()
+        table=ToDoModel.query.filter_by(pk_bint_employee_master_id=employee_id).first()
         if not table:
             abort(403, message="This task doesn't exist")
         if args["vchr_employee_code"]:
@@ -109,8 +109,8 @@ class ToDo(Resource):
         db.session.commit()
         return table
 
-    def delete(self,pk_bint_employee_master_id):
-        table=ToDoModel.query.filter_by(id=pk_bint_employee_master_id).first()
+    def delete(self,employee_id):
+        table=ToDoModel.query.filter_by(pk_bint_employee_master_id=employee_id).first()
         if not table:
             abort(403,message="Task doesn't exist")
         db.session.delete(table)
@@ -118,7 +118,7 @@ class ToDo(Resource):
 
 
 api.add_resource(ToDoList,'/todo')  #Call goes to ToDo List Class
-api.add_resource(ToDo,'/todo/<int:pk_bint_employee_master_id>')  #Call goes to specific row
+api.add_resource(ToDo,'/todo/<int:employee_id>')  #Call goes to specific row
 
 if __name__=='__main__':
     app.run(debug=True)
