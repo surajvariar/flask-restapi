@@ -46,12 +46,12 @@ task_post_args.add_argument("dbl_basic_percentage",type=float,help="This field i
 
 task_put_args=reqparse.RequestParser()
 
-task_post_args.add_argument("vchr_employee_code",type=str)
-task_post_args.add_argument("vchr_employee_name",type=str)
-task_post_args.add_argument("dat_birth_date",type=str)
-task_post_args.add_argument("vchr_contact_number",type=str)
-task_post_args.add_argument("dbl_basic_pay",type=float)
-task_post_args.add_argument("dbl_basic_percentage",type=float)
+task_put_args.add_argument("vchr_employee_code",type=str)
+task_put_args.add_argument("vchr_employee_name",type=str)
+task_put_args.add_argument("dat_birth_date",type=str)
+task_put_args.add_argument("vchr_contact_number",type=str)
+task_put_args.add_argument("dbl_basic_pay",type=float)
+task_put_args.add_argument("dbl_basic_percentage",type=float)
 
 
 class ToDoList(Resource):
@@ -80,7 +80,7 @@ class ToDo(Resource):
         bp = args["dbl_basic_pay"]
         allw = args["dbl_basic_percentage"]
         salary = bp * (1 + (allw/100))
-        todos=ToDoModel(pk_bint_employee_master_id=employee_id,vchr_employee_code=args["vchr_employee_code"],vchr_employee_name=args["vchr_employee_name"],dat_birth_date=args["dat_birth_date"],vchr_contact_number=args["vchr_contact_number"],dbl_basic_pay=args["dbl_basic_pay"],dbl_basic_percentage=args["dbl_basic_percentage"],salary=salary)  
+        todos=ToDoModel(pk_bint_employee_master_id=employee_id,vchr_employee_code=args["vchr_employee_code"],vchr_employee_name=args["vchr_employee_name"],dat_birth_date=args["dat_birth_date"],vchr_contact_number=args["vchr_contact_number"],dbl_basic_pay=args["dbl_basic_pay"],dbl_basic_percentage=args["dbl_basic_percentage"],dbl_salary=salary)  
         db.session.add(todos)   #Adding values to table
         db.session.commit()   #Commiting
         return todos   #Displays the recently added values
@@ -102,10 +102,10 @@ class ToDo(Resource):
             table.dbl_basic_pay=args["dbl_basic_pay"]
         if args["dbl_basic_percentage"]:
             table.dbl_basic_percentage=args["dbl_basic_percentage"]
-        bp = args["dbl_basic_pay"]
-        allw = args["dbl_basic_percentage"]
-        salary = bp * (1 + (allw/100))
-        table.salary=salary
+        bp = table.dbl_basic_pay
+        bper = table.dbl_basic_percentage
+        salary = bp * (1 + (bper/100))
+        table.dbl_salary=salary
         db.session.commit()
         return table
 
